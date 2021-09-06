@@ -100,6 +100,8 @@ def main():
 
     # Save data frame to CSV file
     df.to_csv("zeemaps.csv")
+    
+    # TODO : Clean up the data and rearrange them 
 
 # Start script
 main()
