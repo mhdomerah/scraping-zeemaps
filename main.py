@@ -18,6 +18,7 @@ headers = {
         'accept-language': 'en-US,en;q=0.9,ar;q=0.8',
     }
 
+# Get legends data form zeemap API
 def get_legends():
     params = (
         ('g', '3839111'),
@@ -26,6 +27,7 @@ def get_legends():
     response = requests.get('https://www.zeemaps.com/legends/getall', headers=headers, params=params)
     return response.json()
 
+# Get map point data 
 def get_map_data():
     params = (
         ('g', '3839111'),
@@ -37,6 +39,7 @@ def get_map_data():
     response = requests.get('https://www.zeemaps.com/emarkers', headers=headers, params=params)
     return response.json()
 
+# Get eaeh map point detalis
 def get_ad_detalis(eid):
     params = (
         ('g', ['3839111', '3839111']),
@@ -52,12 +55,15 @@ def get_ad_detalis(eid):
 
 def main():
     ad_detalis_lst = []
+    # Get the id form map data 
     for item in get_map_data():
         _id = item["id"]
         print (_id)
-        ad_detalis_lst.append(get_ad_detalis(_id))
-    
 
+        # Get detalis for each id
+        ad_detalis_lst.append(get_ad_detalis(_id))
+
+    # Get detalis from html part 
     ad_html_detalis = []
     for ad in ad_detalis_lst:
         html_dict = {}
@@ -81,14 +87,20 @@ def main():
         ad_html_detalis.append(html_dict)
 
     master_lst  = []
+
+    # Zip tow list to one list 
     for ad,html in zip(ad_detalis_lst,ad_html_detalis):
         final_output = {**ad, **html}
         final_output = {**final_output, **ad["ad"]}
         del final_output["ad"]
         master_lst.append(final_output)
 
+    # Save ziped list to date frame
     df = pd.DataFrame(master_lst)
+
+    # Save data frame to CSV file
     df.to_csv("zeemaps.csv")
 
+# Start script
 main()
 print ("Done!")
